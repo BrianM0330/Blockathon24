@@ -68,8 +68,8 @@
 </template>
 
 <script lang="ts">
-import { Ecosystems as MockResponse } from "../mock.ts";
-import type { Category, Company, Ecosystem } from "../mock.ts";
+import { Ecosystems as MockResponse } from "../mock";
+import type { Category, Company, Ecosystem } from "../mock";
 import Teleport from 'vue2-teleport';
 
 export default {
