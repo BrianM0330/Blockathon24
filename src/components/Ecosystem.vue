@@ -1,6 +1,17 @@
 <template>
   <div>
     <div class="modalBG" v-if="(firstModal || activeCategory)" @click="closeModal" />
+    <div class="ecosystemHeading">
+      <div class="company">
+        <div class="name"> {{ current.name }}</div>
+        <div class="separator"> | </div>
+        <div class="title"> Ecosystem Map </div>
+      </div>
+      <div class="actions">
+        <div class="copy"> C </div>
+        <div class="download"> D </div>
+      </div>
+    </div>
     <div class="ecosystem" :class="{ expanded: (firstModal || activeCategory) }">
       <div v-show="activeCategory" class="toolbar">
         <div v-if="firstModal && !activeCategory" class="toolbarHeading">
@@ -26,40 +37,48 @@
           <highcharts :options="chartOptionRoot.chartOptions"></highcharts>
         </div>
         <div v-else class="category">
-          <div v-for="company in companies" class="logo" :key="company.name" @click="setCompanyDetails(company)">
+          <div v-for="company in companies" class="logo"
+            :class="{ companySelected: activeCompany, active: activeCompany?.name === company.name }" :key="company.name"
+            @click="setCompanyDetails(company)">
             <img class="logoImage" :src="company.logo" />
             <div class="name"> {{ company.name }} </div>
           </div>
         </div>
-        <div v-if="(firstModal || activeCategory)" class="details">
-          <div class="title">
-            <img class="titleImage" :src="current.logo" />
-            <h2>
-              {{ current.name }}
-            </h2>
+        <div v-if="(firstModal || activeCategory)" class="details" :class="{ expanded: showDrawer }">
+          <div class="detailsCollapsed" v-if="!showDrawer" @click="showDrawer = true">
+            More
           </div>
-          <div v-if="current?.excerpt" class="excerpt">
-            {{ current.excerpt }}
-          </div>
-          <h3> Description </h3>
-          <div class="description">
-            {{ current?.description }}
-          </div>
-          <h3> Links </h3>
-          <div class="links">
-            <a v-for="link in current.links" :href="link" :key="link">
-              {{ link }}
-            </a>
-          </div>
-          <h3> Founders </h3>
-          <div class="founders">
-            <div v-for="founder in current.founders" :key="founder">
-              {{ founder }}
+          <div class="detailsExpanded" v-if="showDrawer">
+            <button class="collapse" @click.prevent="showDrawer = false"> Less </button>
+            <div class="title">
+              <img class="titleImage" :src="current.logo" />
+              <h2>
+                {{ current.name || '' }}
+              </h2>
             </div>
-          </div>
-          <h3> Competitors </h3>
-          <div class="competitors">
-            <div v-for="comp in current.competitors" :key="comp">{{ comp }}</div>
+            <div v-if="current?.excerpt" class="excerpt">
+              {{ current.excerpt }}
+            </div>
+            <h3> Description </h3>
+            <div class="description">
+              {{ current?.description }}
+            </div>
+            <h3> Links </h3>
+            <div class="links">
+              <a v-for="link in current.links" :href="link" :key="link">
+                {{ link }}
+              </a>
+            </div>
+            <h3> Founders </h3>
+            <div class="founders">
+              <div v-for="founder in current.founders" :key="founder">
+                {{ founder }}
+              </div>
+            </div>
+            <h3> Competitors </h3>
+            <div class="competitors">
+              <div v-for="comp in current.competitors" :key="comp">{{ comp }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -85,6 +104,7 @@ export default {
       this.activeCategory = ''
       this.activeCompany = undefined
       this.firstModal = false
+      this.showDrawer = false
     }
   },
   computed: {
@@ -93,9 +113,6 @@ export default {
         name: category?.name,
         value: category?.companies?.length,
       }));
-    },
-    companyImages() {
-      return this.companies.map({})
     },
     title() {
       return this.current?.name
@@ -108,16 +125,25 @@ export default {
         title: this.current?.name,
         chartType: "treemap",
         colorInputIsSupported: null,
+        backgroundColor: '#000000',
         chartOptions: {
           chart: {
             type: "treemap",
+            backgroundColor: '#000000',
           },
           title: {
-            text: this.current?.name,
+            text: '',
           },
           series: [
             {
               colorByPoint: true,
+              dataLabels: {
+                style: {
+                  color: 'white',
+                  textOutline: false
+                }
+              },
+              opacity: 0.5,
               colors: [
                 "#7656FC",
                 "#D6B300",
@@ -158,7 +184,7 @@ export default {
       firstModal: false,
       companies: [],
       response: undefined,
-      showDrawer: true,
+      showDrawer: false,
     };
   },
 
@@ -171,18 +197,17 @@ export default {
 
 <style scoped>
 .ecosystem {
-  border: 1px solid red;
   width: 600px;
   display: flex;
 }
 
 .ecosystem.expanded {
-  position: absolute;
+  position: fixed;
   background: var(--color-background);
   width: 80vw;
-  height: auto;
-  top: 50%;
-  left: 50%;
+  height: 70vh;
+  top: 50vh;
+  left: 50vw;
   transform: translate(-50%, -50%);
   z-index: 2;
   display: flex;
@@ -192,6 +217,7 @@ export default {
 .actualView {
   display: flex;
   width: 100%;
+  height: 100%;
 }
 
 .modalBG {
@@ -206,12 +232,27 @@ export default {
 }
 
 .details {
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 24px 24px 24px 0;
-  overflow-y: scroll;
+  width: 5%;
+
+  .detailsCollapsed {
+    background: gray;
+    height: 100%;
+  }
+
+  .detailsExpanded {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 24px 24px 0;
+    overflow-y: scroll;
+
+    .collapse {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 48px;
+    }
+  }
 
   .title {
     .titleImage {
@@ -219,6 +260,10 @@ export default {
       border-radius: 8px;
     }
   }
+}
+
+.details.expanded {
+  width: 25%;
 }
 
 .chart,
@@ -269,7 +314,6 @@ export default {
   padding: 24px 24px 0 24px;
   gap: 8px;
 
-
   .logo {
     border-radius: 8px;
     display: flex;
@@ -283,6 +327,37 @@ export default {
       width: auto;
       border-radius: 100%;
     }
+  }
+
+  .logo.companySelected {
+    opacity: 50%;
+  }
+
+  .logo.companySelected.active {
+    opacity: 100%;
+
+    .logoImage {
+      border: 1px solid white;
+    }
+  }
+}
+
+.ecosystemHeading {
+  display: flex;
+  padding: 20px 12px;
+  border: 1px solid gray;
+  border-radius: 8px 8px 0 0;
+
+  justify-content: space-between;
+
+
+  .company,
+  .actions {
+    display: flex;
+  }
+
+  .actions {
+    gap: 8px;
   }
 }
 </style>
