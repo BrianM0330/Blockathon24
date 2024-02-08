@@ -13,14 +13,14 @@
       </div>
     </div>
     <div class="ecosystem" :class="{ expanded: (firstModal || activeCategory) }">
-      <div v-show="activeCategory" class="toolbar">
+      <div v-show="activeCategory || firstModal" class="toolbar">
         <div v-if="firstModal && !activeCategory" class="toolbarHeading">
           <img class="toolbarLogo" :src="current.logo">
           |
           <div class="toolbarTitle"> Ecosystem Map </div>
         </div>
         <div v-else class="toolbarBreadcrumbs">
-          <div class="breadcrumbRoot" @click="activeCategory = ''"> {{ ecosystemTitle }} Ecosystem </div>
+          <div class="breadcrumbRoot" @click="rootBreadcrumbClick"> {{ ecosystemTitle }} Ecosystem </div>
           <div class="separator"> / </div>
           <div class="breadcrumbChild"> {{ current.name }} </div>
         </div>
@@ -95,11 +95,18 @@ import Teleport from 'vue2-teleport';
 export default {
   components: { Teleport },
   methods: {
+    rootBreadcrumbClick() {
+      this.firstModal = true
+      this.activeCategory = ''
+    },
     setExpansion() {
       this.firstModal = true
     },
     setCompanyDetails(e) {
       this.activeCompany = e
+      if (!this.showDrawer) {
+        this.showDrawer = true
+      }
     },
     closeModal() {
       this.activeCategory = ''
@@ -222,6 +229,10 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
+
+  .chart {
+    width: 75%;
+  }
 }
 
 .modalBG {
