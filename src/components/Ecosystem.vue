@@ -46,44 +46,45 @@
         </div>
         <div v-if="(firstModal || activeCategory)" class="details" :class="{ expanded: showDrawer }">
           <div class="detailsCollapsed" v-if="!showDrawer" @click="showDrawer = true">
-            More
-          </div>
-          <div class="detailsExpanded" v-if="showDrawer">
-            <button class="collapse" @click.prevent="showDrawer = false"> Less </button>
-            <div class="title">
-              <img class="titleImage" :src="current.logo" />
-              <h2>
-                {{ current.name || '' }}
-              </h2>
+            <div class="collapseArrow"> <- </div>
+                <button class="collapse" @click.prevent="showDrawer = true"> More </button>
             </div>
-            <div v-if="current?.excerpt" class="excerpt">
-              {{ current.excerpt }}
-            </div>
-            <h3> Description </h3>
-            <div class="description">
-              {{ current?.description }}
-            </div>
-            <h3> Links </h3>
-            <div class="links">
-              <a v-for="link in current.links" :href="link" :key="link">
-                {{ link }}
-              </a>
-            </div>
-            <h3> Founders </h3>
-            <div class="founders">
-              <div v-for="founder in current.founders" :key="founder">
-                {{ founder }}
+            <div class="detailsExpanded" v-if="showDrawer">
+              <button class="collapse" @click.prevent="showDrawer = false"> Less </button>
+              <div class="title">
+                <img class="titleImage" :src="current.logo" />
+                <h2>
+                  {{ current.name || '' }}
+                </h2>
               </div>
-            </div>
-            <h3> Competitors </h3>
-            <div class="competitors">
-              <div v-for="comp in current.competitors" :key="comp">{{ comp }}</div>
+              <div v-if="current?.excerpt" class="excerpt">
+                {{ current.excerpt }}
+              </div>
+              <h3> Description </h3>
+              <div class="description">
+                {{ current?.description }}
+              </div>
+              <h3> Links </h3>
+              <div class="links">
+                <a v-for="link in current.links" :href="link" :key="link">
+                  {{ link }}
+                </a>
+              </div>
+              <h3> Founders </h3>
+              <div class="founders">
+                <div v-for="founder in current.founders" :key="founder">
+                  {{ founder }}
+                </div>
+              </div>
+              <h3> Competitors </h3>
+              <div class="competitors">
+                <div v-for="comp in current.competitors" :key="comp">{{ comp }}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -212,6 +213,9 @@ export default {
   z-index: 2;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
+  border: 1px solid gray;
+  border-radius: 8px;
 }
 
 .actualView {
@@ -232,11 +236,16 @@ export default {
 }
 
 .details {
-  width: 5%;
+  width: 7.5%;
 
   .detailsCollapsed {
-    background: gray;
+    background: var(--color-background);
     height: 100%;
+    border-left: 1px solid gray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .detailsExpanded {
@@ -247,10 +256,7 @@ export default {
     overflow-y: scroll;
 
     .collapse {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 48px;
+      margin: -12px 0 0 auto;
     }
   }
 
@@ -258,6 +264,8 @@ export default {
     .titleImage {
       width: 100%;
       border-radius: 8px;
+      width: 96px;
+      height: 96px;
     }
   }
 }
@@ -311,21 +319,22 @@ export default {
   flex-wrap: wrap;
   overflow-y: scroll;
   height: fit-content;
-  padding: 24px 24px 0 24px;
+  padding: 16px 24px 0 24px;
   gap: 8px;
 
   .logo {
     border-radius: 8px;
     display: flex;
-    width: 31%;
+    width: 32.5%;
     max-height: 48px;
     gap: 4px;
     align-items: center;
+    margin: 8px 0;
 
     .logoImage {
-      height: 100%;
-      width: auto;
       border-radius: 100%;
+      width: 40px;
+      height: 40px;
     }
   }
 
